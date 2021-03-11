@@ -83,7 +83,8 @@ export default {
       password: '',
       passwordOk: '',
       email: '',
-      phone: ''
+      phone: '',
+      flag: true // 设置是否可以提交，用户名存在时候不向后端请求
     }
   },
   components: {},
@@ -96,14 +97,16 @@ export default {
           // 如果用户名存在
           if (data.code === 500) {
             this.$message.error(data.msg)
-            return false
+            this.flag = false
+          } else {
+            this.flag = true
           }
         })
-        return true
       }
     },
     // 注册
     register () {
+      this.checkUsername()
       const username = this.username
       const password = this.password
       const passwordOk = this.passwordOk
@@ -121,7 +124,7 @@ export default {
         this.$message.warning('两次输入的密码不同')
       } else {
         // 如果用户名
-        if (this.checkUsername()) {
+        if (this.flag) {
           let promise = reqRegister(this.username, this.password, this.email, this.phone)
           promise.then(data => {
             if (data.msg === 'success') {
